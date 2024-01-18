@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="vagmr flask api">
+    <meta name="description" content="vagmr flask api">
+    <title>Flask接口文档</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            background-color: #f0f0f0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .main {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer {
+            background-color: #333;
+            padding: 20px;
+            width: 80%;
+            height: 30vh;
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 auto;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+        }
+
+        .button {
+            padding: 25px 40px;
+            border: none;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+            flex:2;
+            cursor: pointer;
+        }
+        .copyright{
+            color: #fff;
+            font-size: 12px;
+            margin-top: 10px;
+            flex:1
+        }
+        .info{
+            color: #fff;
+            font-size: 20px;
+            font-family: 宋体, sans-serif;
+            margin-top: 10px;
+            flex:1
+        }
+
+        .button:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Flask接口文档</div>
+            <div class="nav">
+                <div class="nav-item">首页</div>
+                <div class="nav-item">关于</div>
+                <div class="nav-item">联系</div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="card">
+                <img src="static/imgs/flask.png" alt="flask" class="card-icon">
+                <div class="card-title">Flask简介</div>
+                <div class="card-desc">Flask是一个基于Python的轻量级Web应用框架，可以快速开发RESTful API。</div>
+            </div>
+            <div class="card">
+                <img src="static/imgs/api.png" alt="api" class="card-icon">
+                <div class="card-title">API简介</div>
+                <div class="card-desc">API是应用程序编程接口的缩写，是一种定义应用程序之间交互的规范。</div>
+            </div>
+            <div class="card">
+                <img src={{url_for('static', filename='imgs/doc.png')}} alt="doc" class="card-icon">
+                <div class="card-title">文档简介</div>
+                <div class="card-desc">文档是用来描述API的功能、参数、返回值等信息的一种方式，可以帮助开发者和用户更好地理解和使用API。</div>
+            </div>
+        </div>
+        <div class="footer">
+            <p class="info">此项目是我的flask api接口文档</p>
+            <button class="button">查看文档</button>
+            <div class="copyright">&copy; vagmr@ 2023 Flask接口文档</div>
+        </div>
+    </div>
+</body>
+</html>
