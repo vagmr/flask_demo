@@ -132,6 +132,27 @@ def create_role():
     return jsonify({'code': 200, 'msg': 'success', 'data': role.id}), 200
 
 
+@user_router.delete("/role/<int:rid>")
+def delete_role(rid):
+    role = Role.query.get(rid)
+    if role is None:
+        return jsonify({'code': 404, 'msg': 'role not found'}), 404
+    db.session.delete(role)
+    db.session.commit()
+    return jsonify({'code': 200, 'msg': 'success'}), 200
+
+
+@user_router.get('/role')
+def getall_role():
+    raw_role = [role.to_dict() for role in Role.query.all()]
+    res = {
+        'code': 200,
+        'msg': 'success',
+        'data': raw_role
+    }
+    return jsonify(res)
+
+
 @user_router.post('/register')
 def register():
     """注册用户

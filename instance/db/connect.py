@@ -1,9 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-from util.getEnv import init_env,get_env
+from util.getEnv import init_env, get_env
 
 db = SQLAlchemy()
 
 init_env()
+
 
 class DatabaseConfig:
     """数据配置类"""
@@ -35,6 +36,7 @@ class Role(db.Model):
         role = cls(name=name)
         db.session.add(role)
         db.session.commit()
+        return role
 
 
 class User(db.Model):
