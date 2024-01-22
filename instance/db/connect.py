@@ -1,14 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
+from util.getEnv import init_env,get_env
 
 db = SQLAlchemy()
 
+init_env()
 
 class DatabaseConfig:
     """数据配置类"""
     DB_TYPE = 'mysql'
     DB_USER = 'vagmr'
-    DB_PASSWORD = 'vagmrlovedev6'
-    DB_HOST = 'vagmr.mysql.pythonanywhere-services.com'
+    DB_PASSWORD = get_env('DB_PASSWORD')
+    DB_HOST = get_env('DB_HOST')
     DB_NAME = 'vagmr$flask'
     SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLAlchemy_TRACK_MODIFICATIONS = False
