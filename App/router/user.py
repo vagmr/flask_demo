@@ -117,6 +117,7 @@ def get_user(uid):
 
 
 @user_router.post("/role")
+@admin_required
 def create_role():
     req = request.get_json(silent=True)
     if req is None:
@@ -129,6 +130,7 @@ def create_role():
 
 
 @user_router.delete("/role/<int:rid>")
+@admin_required
 def delete_role(rid):
     role = Role.query.get(rid)
     if role is None:
@@ -160,7 +162,7 @@ def register():
     password = req.get('password')
     if username is None or password is None:
         return jsonify({'code': 400, 'msg': 'username or password not provided'}), 400
-    user = User(username=username, password=password, role_id=1)
+    user = User(username=username, password=password, role_id=2)
     db.session.add(user)
     db.session.commit()
     return jsonify({'code': 200, 'msg': 'success', 'data': user.id}), 200
