@@ -11,7 +11,8 @@ import os
 import sys
 
 # 获取当前项目的根目录
-root_path = sys.path[1]
+print(sys.path)
+root_path = "/home/vagmr/mysite/flask_demo/"
 env_path = os.path.join(root_path, '.env')
 env_dict = {}
 

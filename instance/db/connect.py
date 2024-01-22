@@ -6,12 +6,11 @@ db = SQLAlchemy()
 class DatabaseConfig:
     """数据配置类"""
     DB_TYPE = 'mysql'
-    DB_USER = 'root'
-    DB_PASSWORD = 'root'
-    DB_HOST = '127.0.0.1'
-    DB_PORT = '3306'
-    DB_NAME = 'flask'
-    SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    DB_USER = 'vagmr'
+    DB_PASSWORD = 'vagmrlovedev6'
+    DB_HOST = 'vagmr.mysql.pythonanywhere-services.com'
+    DB_NAME = 'vagmr$flask'
+    SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLAlchemy_TRACK_MODIFICATIONS = False
 
 

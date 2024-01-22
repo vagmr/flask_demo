@@ -44,6 +44,3 @@ def cs():
     uid = get_jwt_identity()
     return jsonify({'code': 200, 'msg': 'success', 'data': {'id': uid}}), 200
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
