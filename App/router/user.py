@@ -42,20 +42,27 @@ user.py
 from flask import Blueprint, jsonify, request
 from instance.db.connect import User, Role, db
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, verify_jwt_in_request
+from functools import wraps
 
 user_router = Blueprint('user', __name__, url_prefix='/user')
 
 
 # 权限判断
-def check_permission(rid: int):
-    role = Role.query.get(rid)
-    if role.name != 'admin':
-        return False
-    return True
+def admin_required(fn):
+    @wraps(fn)
+    @jwt_required()
+    def wrapper(*args, **kwargs):
+        query_user = User.query.get(get_jwt_identity())
+        if query_user and query_user.role_id:
+            role = Role.query.get(query_user.role_id)
+            if role and role.name == 'admin':
+                return fn(*args, **kwargs)
+        return jsonify({'code': 403, 'msg': '你没有权限访问此api'}), 403
+    return wrapper
 
 
 @user_router.get('/')
-@jwt_required()
+@admin_required
 def get_users():
     """
     获取用户列表。
@@ -74,14 +81,6 @@ def get_users():
                 'data': list       # 用户列表
             }
     """
-    current_user = User.query.get(get_jwt_identity())
-    if not check_permission(current_user.role_id):
-        res = {
-            'code': 403,
-            'msg': '你没有权限访问',
-            'data': None
-        }
-        return jsonify(res), 403
     raw_user = [user.to_dict() for user in User.query.all()]
     res = {
         'code': 200,
@@ -92,12 +91,9 @@ def get_users():
 
 
 @user_router.get('/<int:uid>')
-@jwt_required()
+@admin_required
 def get_user(uid):
     # 一个是查询参数一个是路径参数
-    query_user = User.query.get(get_jwt_identity())
-    if not check_permission(query_user.role_id):
-        return jsonify({'code': 403, 'msg': '你没有权限访问此api'}), 403
     qid = request.args.get('uid') or request.view_args.get('uid')
     if qid is None:
         return jsonify({'code': 400, 'msg': 'no uid provided'}), 400
@@ -164,7 +160,7 @@ def register():
     password = req.get('password')
     if username is None or password is None:
         return jsonify({'code': 400, 'msg': 'username or password not provided'}), 400
-    user = User(username=username, password=password, role_id=2)
+    user = User(username=username, password=password, role_id=1)
     db.session.add(user)
     db.session.commit()
     return jsonify({'code': 200, 'msg': 'success', 'data': user.id}), 200
