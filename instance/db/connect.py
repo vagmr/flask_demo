@@ -20,6 +20,21 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
 
+    def __repr__(self):
+        return '<Role %r>' % self.name
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+    @classmethod
+    def create_role(cls, name):
+        role = cls(name=name)
+        db.session.add(role)
+        db.session.commit()
+
 
 class User(db.Model):
     __tablename__ = 'users'

@@ -120,6 +120,18 @@ def get_user(uid):
     return jsonify(res)
 
 
+@user_router.post("/role")
+def create_role():
+    req = request.get_json(silent=True)
+    if req is None:
+        return jsonify({'code': 400, 'msg': 'no data'}), 400
+    name = req.get('name')
+    if name is None:
+        return jsonify({'code': 400, 'msg': 'name not provided'}), 400
+    role = Role.create_role(name)
+    return jsonify({'code': 200, 'msg': 'success', 'data': role.id}), 200
+
+
 @user_router.post('/register')
 def register():
     """注册用户
