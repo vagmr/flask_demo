@@ -58,12 +58,6 @@ class User(db.Model):
         }
 
 
-def insert_data(content: str):
-    saying = Saying(content=content)
-    db.session.add(saying)
-    db.session.commit()
-
-
 class Saying(db.Model):
     __tablename__ = 'saying'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,3 +76,10 @@ class Saying(db.Model):
             'id': self.id,
             'content': self.content
         }
+
+    @classmethod
+    def create_saying(cls, content):
+        saying = cls(content=content)
+        db.session.add(saying)
+        db.session.commit()
+        return saying

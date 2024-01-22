@@ -1,7 +1,7 @@
 import random
 
 from flask import Blueprint, jsonify, request
-from instance.db.connect import Saying, insert_data
+from instance.db.connect import Saying
 
 saying_router = Blueprint('saying', __name__, url_prefix='/saying')
 sayings = [{"id": 16, "content": "害怕失败是成功的最大障碍，勇敢尝试才是通往成功的道路。"},
@@ -93,11 +93,13 @@ def get_saying(sid):
 @saying_router.post("/v1", endpoint='create_saying_db')
 def create_saying():
     data = request.get_json()
-    insert_data(content=data["content"])
-    return jsonify({"code": 200, "msg": "success"})
+    saying = Saying.create_saying(content=data['content'])
+    return jsonify({"code": 200, "msg": "success", "data": saying.to_dict()})
 
 
 @saying_router.get("/v1")
 def get_form_database():
-    all_sayings = Saying.query.all()[0]
+    all_sayings = Saying.query.first()
+    if all_sayings is None:
+        return jsonify({"code": 404, "msg": "saying not found", "data": None})
     return jsonify(all_sayings.to_dict())
