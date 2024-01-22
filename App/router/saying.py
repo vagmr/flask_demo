@@ -1,6 +1,7 @@
 import random
 
 from flask import Blueprint, jsonify, request
+from sqlalchemy import func
 from instance.db.connect import Saying
 
 saying_router = Blueprint('saying', __name__, url_prefix='/saying')
@@ -99,7 +100,9 @@ def create_saying():
 
 @saying_router.get("/v1")
 def get_form_database():
-    all_sayings = Saying.query.first()
-    if all_sayings is None:
-        return jsonify({"code": 404, "msg": "saying not found", "data": None})
-    return jsonify(all_sayings.to_dict())
+    random_saying = Saying.query.order_by(func.rand()).first()
+
+    if random_saying is None:
+        return jsonify({"code": 404, "msg": "Saying not found", "data": None})
+
+    return jsonify(random_saying.to_dict())
