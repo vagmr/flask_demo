@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,21 +108,23 @@
             color: #333;
             font-size: 18px;
             font-weight: bold;
-            flex:2;
+            flex: 2;
             cursor: pointer;
         }
-        .copyright{
+
+        .copyright {
             color: #fff;
             font-size: 12px;
             margin-top: 10px;
-            flex:1
+            flex: 1
         }
-        .info{
+
+        .info {
             color: #fff;
             font-size: 20px;
             font-family: 宋体, sans-serif;
             margin-top: 10px;
-            flex:1
+            flex: 1
         }
 
         .button:hover {
@@ -129,6 +132,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -151,16 +155,18 @@
                 <div class="card-desc">API是应用程序编程接口的缩写，是一种定义应用程序之间交互的规范。</div>
             </div>
             <div class="card">
-                <img src={{url_for('static', filename='imgs/doc.png')}} alt="doc" class="card-icon">
+                <img src={{url_for('static', filename='imgs/doc.png' )}} alt="doc" class="card-icon">
                 <div class="card-title">文档简介</div>
                 <div class="card-desc">文档是用来描述API的功能、参数、返回值等信息的一种方式，可以帮助开发者和用户更好地理解和使用API。</div>
             </div>
         </div>
         <div class="footer">
             <p class="info">此项目是我的flask api接口文档</p>
-            <button class="button">查看文档</button>
+            <button class="button"><a
+                    href="https://apifox.com/apidoc/shared-a7da261b-62bd-4995-a2e7-fcd6a2bc96df">查看文档</a></button>
             <div class="copyright">&copy; vagmr@ 2023 Flask接口文档</div>
         </div>
     </div>
 </body>
+
 </html>
