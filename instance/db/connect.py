@@ -57,6 +57,10 @@ class User(db.Model):
             'role': role.name
         }
 
+    @classmethod
+    def getAllUsers(cls):
+        return cls.query.all()
+
 
 class Saying(db.Model):
     __tablename__ = 'saying'
@@ -83,3 +87,7 @@ class Saying(db.Model):
         db.session.add(saying)
         db.session.commit()
         return saying
+
+
+if __name__ == "__main__":
+    User.getAllUsers()
