@@ -186,8 +186,11 @@ def auth():
     password = req.get('password')
     if username is None or password is None:
         return jsonify({'code': 400, 'msg': 'username or password not provided'}), 400
-    user = User.query.filter_by(username=username, password=password).first()
+    user = User.query.filter_by(username=username).first()
     if user is None:
-        return jsonify({'code': 404, 'msg': 'not found'}), 404
+        return jsonify({'code': 404, 'msg': 'username not found'}), 404
+    user = User.query.filter_by(password=password).first()
+    if user is None:
+        return jsonify({'code': 404, 'msg': ' not found,please check your password'}), 404
     access_token = create_access_token(identity=user.id)
     return jsonify({'code': 200, 'msg': 'success', 'access_token': 'Bearer ' + access_token}), 200
