@@ -1,9 +1,10 @@
 from datetime import datetime
+from turtle import st
 from flask import Blueprint, request, jsonify, send_file
-from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from instance.db.connect import db, File
 import os
+import uuid
 
 file_router = Blueprint("file_router", __name__)
 
@@ -25,17 +26,25 @@ def upload_file():
     if file.filename == "":
         return jsonify({"code": 400, "msg": "No selected file"}), 400
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename if file.filename else "空的文件名")
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        filename = str(file.filename)
+        # 生成唯一的文件名
+        unique_filename = str(uuid.uuid4()) + os.path.splitext(filename)[1]
+        file.save(os.path.join(UPLOAD_FOLDER, unique_filename))
         # 记录文件元数据到数据库
         new_file = File(
-            filename=filename, upload_time=datetime.utcnow(), user_id=get_jwt_identity()
+            filename=unique_filename,
+            upload_time=datetime.utcnow(),
+            user_id=get_jwt_identity(),
         )
         db.session.add(new_file)
         db.session.commit()
         return (
             jsonify(
-                {"code": 200, "msg": "File uploaded successfully", "filename": filename}
+                {
+                    "code": 200,
+                    "msg": "File uploaded successfully",
+                    "filename": unique_filename,
+                }
             ),
             200,
         )
