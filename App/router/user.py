@@ -140,7 +140,7 @@ def delete_role(rid):
     return jsonify({'code': 200, 'msg': 'success'}), 200
 
 
-@user_router.get('/role')
+@user_router.get('/roles')
 def getall_role():
     raw_role = [role.to_dict() for role in Role.query.all()]
     res = {

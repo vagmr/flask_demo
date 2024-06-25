@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from util.getEnv import init_env, get_env
-
+from datetime import datetime
 db = SQLAlchemy()
 
 init_env()
@@ -16,7 +16,14 @@ class DatabaseConfig:
     SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     SQLAlchemy_TRACK_MODIFICATIONS = False
 
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(120), nullable=False)
+    upload_time = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    def __repr__(self):
+        return f'<File {self.filename}>'
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)

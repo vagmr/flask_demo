@@ -2,10 +2,12 @@ from flask import Flask, render_template, jsonify
 from App.router.user import user_router
 from App.router.saying import saying_router
 from App.router.item import item_router
+from App.router.file import file_router
 from instance.db.connect import db, DatabaseConfig
 from util.getEnv import init_env, get_env
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
+import os
 
 app = Flask(__name__, template_folder="App/templates",
             static_folder="App/static")
@@ -19,9 +21,16 @@ jwt = JWTManager(app)
 app.register_blueprint(user_router)
 app.register_blueprint(saying_router)
 app.register_blueprint(item_router)
+app.register_blueprint(file_router)
 
 app.config.from_object(DatabaseConfig)
 db.init_app(app)
+
+
+# 自动创建上传目录
+UPLOAD_FOLDER = 'var/static/uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 with app.app_context():
     db.create_all()
