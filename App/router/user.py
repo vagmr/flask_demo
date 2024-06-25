@@ -123,6 +123,7 @@ def delete_role(rid):
 
 
 @user_router.post("/role")
+@admin_required
 def create_role():
     req = request.get_json(silent=True)
     if req is None:
@@ -154,7 +155,7 @@ def register():
     users = User.query.filter_by(username=username).all()
     if len(users) > 0:
         return jsonify({"code": 409, "msg": "username already exists"}), 409
-    user = User(username=username, password=password, role_id=2)
+    user = User(username=username, password=password, role_id=1)
     db.session.add(user)
     db.session.commit()
     return jsonify({"code": 200, "msg": "success", "data": user.id}), 200
