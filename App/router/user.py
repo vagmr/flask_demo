@@ -123,7 +123,6 @@ def delete_role(rid):
 
 
 @user_router.post("/role")
-@admin_required
 def create_role():
     req = request.get_json(silent=True)
     if req is None:

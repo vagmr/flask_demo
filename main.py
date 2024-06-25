@@ -32,7 +32,6 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 with app.app_context():
-    db.drop_all()
     db.create_all()
 
 
