@@ -41,3 +41,17 @@ def upload_file():
         )
     else:
         return jsonify({"code": 400, "msg": "File type not allowed"}), 400
+
+
+@file_router.route("/files", methods=["GET"])
+@jwt_required()
+def get_files():
+    user_id = get_jwt_identity()
+    files = File.query.filter_by(user_id=user_id).all()
+    if not files:
+        return jsonify({"code": 404, "msg": "没有找到文件"}), 404
+    files_data = [
+        {"id": file.id, "filename": file.filename, "upload_time": file.upload_time}
+        for file in files
+    ]
+    return jsonify({"code": 200, "files": files_data}), 200
