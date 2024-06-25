@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from util.getEnv import init_env, get_env
 from datetime import datetime
+
 db = SQLAlchemy()
 
 init_env()
@@ -8,35 +9,55 @@ init_env()
 
 class DatabaseConfig:
     """数据配置类"""
-    DB_TYPE = 'mysql'
-    DB_USER = 'vagmr'
-    DB_PASSWORD = get_env('DB_PASSWORD')
-    DB_HOST = get_env('DB_HOST')
-    DB_NAME = 'vagmr$flask'
-    SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
+
+    DB_TYPE = "mysql"
+    DB_USER = "vagmr"
+    DB_PASSWORD = get_env("DB_PASSWORD")
+    DB_HOST = get_env("DB_HOST")
+    DB_NAME = "vagmr$flask"
+    SQLALCHEMY_DATABASE_URI = f"{DB_TYPE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
     SQLAlchemy_TRACK_MODIFICATIONS = False
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    password = db.Column(db.String(64))
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"))
+
+    def __repr__(self):
+        return "<User %r>" % self.username
+
+    def to_dict(self):
+        role = Role.query.get(self.role_id)
+        return {"id": self.id, "username": self.username, "role": role.name}
+
+    @classmethod
+    def getAllUsers(cls):
+        return cls.query.all()
+
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(120), nullable=False)
     upload_time = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     def __repr__(self):
-        return f'<File {self.filename}>'
+        return f"<File {self.filename}>"
+
+
 class Role(db.Model):
-    __tablename__ = 'roles'
+    __tablename__ = "roles"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
 
     def __repr__(self):
-        return '<Role %r>' % self.name
+        return "<Role %r>" % self.name
 
     def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name
-        }
+        return {"id": self.id, "name": self.name}
 
     @classmethod
     def create_role(cls, name):
@@ -46,31 +67,8 @@ class Role(db.Model):
         return role
 
 
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
-    password = db.Column(db.String(64))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
-    def to_dict(self):
-        role = Role.query.get(self.role_id)
-        return {
-            'id': self.id,
-            'username': self.username,
-            'role': role.name
-        }
-
-    @classmethod
-    def getAllUsers(cls):
-        return cls.query.all()
-
-
 class Saying(db.Model):
-    __tablename__ = 'saying'
+    __tablename__ = "saying"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(256))
 
@@ -83,10 +81,7 @@ class Saying(db.Model):
 
     # 转化为字典
     def to_dict(self):
-        return {
-            'id': self.id,
-            'content': self.content
-        }
+        return {"id": self.id, "content": self.content}
 
     @classmethod
     def create_saying(cls, content):
