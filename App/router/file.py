@@ -80,7 +80,7 @@ def download_file(file_id):
     file = File.query.filter_by(id=file_id, user_id=user_id).first()
     if not file:
         return jsonify({"code": 404, "msg": "文件未找到"}), 404
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file_path = os.path.join("/home/vagmr/var/static/uploads/", file.filename)
     print(file_path, file.filename)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True)
