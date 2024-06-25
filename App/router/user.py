@@ -39,12 +39,18 @@ user.py
 
 代码包括对权限检查、缺失或无效请求数据以及请求用户未找到情况的错误处理。
 """
+
 from flask import Blueprint, jsonify, request
 from instance.db.connect import User, Role, db
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, verify_jwt_in_request
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity,
+    create_access_token,
+    verify_jwt_in_request,
+)
 from functools import wraps
 
-user_router = Blueprint('user', __name__, url_prefix='/user')
+user_router = Blueprint("user", __name__, url_prefix="/user")
 
 
 # 权限判断
@@ -55,13 +61,14 @@ def admin_required(fn):
         query_user = User.query.get(get_jwt_identity())
         if query_user and query_user.role_id:
             role = Role.query.get(query_user.role_id)
-            if role and role.name == 'admin':
+            if role and role.name == "admin":
                 return fn(*args, **kwargs)
-        return jsonify({'code': 403, 'msg': '你没有权限访问此api'}), 403
+        return jsonify({"code": 403, "msg": "你没有权限访问此api"}), 403
+
     return wrapper
 
 
-@user_router.get('/')
+@user_router.get("/")
 @admin_required
 def get_users():
     """
@@ -82,51 +89,26 @@ def get_users():
             }
     """
     raw_user = [user.to_dict() for user in User.query.all()]
-    res = {
-        'code': 200,
-        'msg': 'success',
-        'data': raw_user
-    }
+    res = {"code": 200, "msg": "success", "data": raw_user}
     return jsonify(res)
 
 
-@user_router.get('/<int:uid>')
+@user_router.get("/<int:uid>")
 @admin_required
 def get_user(uid):
     # 一个是查询参数一个是路径参数
-    qid = request.args.get('uid') or request.view_args.get('uid')
+    qid = request.args.get("uid") or request.view_args.get("uid")
     if qid is None:
-        return jsonify({'code': 400, 'msg': 'no uid provided'}), 400
+        return jsonify({"code": 400, "msg": "no uid provided"}), 400
     all_users_instance = User.query.all()
     users = [user.to_dict() for user in all_users_instance]
-    filtered_users = filter(lambda x: str(qid) == str(x['id']), users)
+    filtered_users = filter(lambda x: str(qid) == str(x["id"]), users)
     data = next(filtered_users, None)
     if data is None:
-        res = {
-            'code': 404,
-            'msg': 'user not found',
-            'data': None
-        }
+        res = {"code": 404, "msg": "user not found", "data": None}
         return jsonify(res), 404
-    res = {
-        'code': 200,
-        'msg': 'success',
-        'data': data
-    }
+    res = {"code": 200, "msg": "success", "data": data}
     return jsonify(res)
-
-
-@user_router.post("/role")
-@admin_required
-def create_role():
-    req = request.get_json(silent=True)
-    if req is None:
-        return jsonify({'code': 400, 'msg': 'no data'}), 400
-    name = req.get('name')
-    if name is None:
-        return jsonify({'code': 400, 'msg': 'name not provided'}), 400
-    role = Role.create_role(name)
-    return jsonify({'code': 200, 'msg': 'success', 'data': role.id}), 200
 
 
 @user_router.delete("/role/<int:rid>")
@@ -134,63 +116,78 @@ def create_role():
 def delete_role(rid):
     role = Role.query.get(rid)
     if role is None:
-        return jsonify({'code': 404, 'msg': 'role not found'}), 404
+        return jsonify({"code": 404, "msg": "role not found"}), 404
     db.session.delete(role)
     db.session.commit()
-    return jsonify({'code': 200, 'msg': 'success'}), 200
+    return jsonify({"code": 200, "msg": "success"}), 200
 
 
-@user_router.get('/roles')
+@user_router.post("/role")
+@admin_required
+def create_role():
+    req = request.get_json(silent=True)
+    if req is None:
+        return jsonify({"code": 400, "msg": "no data"}), 400
+    name = req.get("name")
+    if name is None:
+        return jsonify({"code": 400, "msg": "name not provided"}), 400
+    role = Role.create_role(name)
+    return jsonify({"code": 200, "msg": "success", "data": role.id}), 200
+
+
+@user_router.get("/roles")
 def getall_role():
     raw_role = [role.to_dict() for role in Role.query.all()]
-    res = {
-        'code': 200,
-        'msg': 'success',
-        'data': raw_role
-    }
+    res = {"code": 200, "msg": "success", "data": raw_role}
     return jsonify(res)
 
 
-@user_router.post('/register')
+@user_router.post("/register")
 def register():
-    """注册用户
-    """
+    """注册用户"""
     if request.get_json(silent=True) is None:
-        return jsonify({'code': 400, 'msg': 'no data'}), 400
+        return jsonify({"code": 400, "msg": "no data"}), 400
     req = request.get_json(silent=True)
-    username = req.get('username')
-    password = req.get('password')
+    username = req.get("username")
+    password = req.get("password")
     if username is None or password is None:
-        return jsonify({'code': 400, 'msg': 'username or password not provided'}), 400
+        return jsonify({"code": 400, "msg": "username or password not provided"}), 400
     users = User.query.filter_by(username=username).all()
     if len(users) > 0:
-        return jsonify({'code': 409, 'msg': 'username already exists'}), 409
+        return jsonify({"code": 409, "msg": "username already exists"}), 409
     user = User(username=username, password=password, role_id=2)
     db.session.add(user)
     db.session.commit()
-    return jsonify({'code': 200, 'msg': 'success', 'data': user.id}), 200
+    return jsonify({"code": 200, "msg": "success", "data": user.id}), 200
 
 
-@user_router.post('/login')
+@user_router.post("/login")
 def auth():
-    """登录
-    """
+    """登录"""
     verify_jwt_in_request(optional=True)
     current_user = get_jwt_identity()
     if current_user:
-        return jsonify({"code": "302", "msg": '不要重复登录'}), 302
+        return jsonify({"code": "302", "msg": "不要重复登录"}), 302
     req = request.get_json(silent=True) or None
     if req is None:
-        return jsonify({'code': 400, 'msg': 'no data'}), 400
-    username = req.get('username')
-    password = req.get('password')
+        return jsonify({"code": 400, "msg": "no data"}), 400
+    username = req.get("username")
+    password = req.get("password")
     if username is None or password is None:
-        return jsonify({'code': 400, 'msg': 'username or password not provided'}), 400
+        return jsonify({"code": 400, "msg": "username or password not provided"}), 400
     user = User.query.filter_by(username=username).first()
     if user is None:
-        return jsonify({'code': 404, 'msg': 'username not found'}), 404
+        return jsonify({"code": 404, "msg": "username not found"}), 404
     user = User.query.filter_by(password=password).first()
     if user is None:
-        return jsonify({'code': 404, 'msg': ' not found,please check your password'}), 404
+        return (
+            jsonify({"code": 404, "msg": " not found,please check your password"}),
+            404,
+        )
     access_token = create_access_token(identity=user.id)
-    return jsonify({'code': 200, 'msg': 'success', 'access_token': 'Bearer ' + access_token}), 200
+    return (
+        jsonify(
+            {"code": 200, "msg": "success", "access_token": "Bearer " + access_token}
+        ),
+        200,
+    )
