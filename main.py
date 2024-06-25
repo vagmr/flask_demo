@@ -9,13 +9,12 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
 import os
 
-app = Flask(__name__, template_folder="App/templates",
-            static_folder="App/static")
+app = Flask(__name__, template_folder="App/templates", static_folder="App/static")
 # 初始化环境变量
 init_env()
 # 配置JWT
-app.config['JWT_SECRET_KEY'] = get_env('KEY')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=int(get_env('EXPIREDTIME')))
+app.config["JWT_SECRET_KEY"] = get_env("KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(get_env("EXPIREDTIME")))
 jwt = JWTManager(app)
 
 app.register_blueprint(user_router)
@@ -28,17 +27,18 @@ db.init_app(app)
 
 
 # 自动创建上传目录
-UPLOAD_FOLDER = 'var/static/uploads'
+UPLOAD_FOLDER = "var/static/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 with app.app_context():
+    db.drop_all()
     db.create_all()
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html', err=error), 404
+    return render_template("404.html", err=error), 404
 
 
 @app.route("/")
@@ -46,10 +46,9 @@ def index():
     return render_template("index.html")
 
 
-@app.get('/cs')
+@app.get("/cs")
 @jwt_required()
 def cs():
     # 获取到的是用户的id
     uid = get_jwt_identity()
-    return jsonify({'code': 200, 'msg': 'success', 'data': {'id': uid}}), 200
-
+    return jsonify({"code": 200, "msg": "success", "data": {"id": uid}}), 200
