@@ -47,6 +47,9 @@ class File(db.Model):
     def __repr__(self):
         return f"<File {self.filename}>"
 
+    def formatted_upload_time(self):
+        return self.upload_time.strftime("%Y-%m-%d %H:%M:%S")
+
 
 class Role(db.Model):
     __tablename__ = "roles"

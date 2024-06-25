@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from instance.db.connect import db, File
@@ -43,7 +43,7 @@ def upload_file():
         return jsonify({"code": 400, "msg": "File type not allowed"}), 400
 
 
-@file_router.route("/files", methods=["GET"])
+@file_router.route("/files/info", methods=["GET"])
 @jwt_required()
 def get_files():
     user_id = get_jwt_identity()
@@ -51,7 +51,37 @@ def get_files():
     if not files:
         return jsonify({"code": 404, "msg": "没有找到文件"}), 404
     files_data = [
-        {"id": file.id, "filename": file.filename, "upload_time": file.upload_time}
+        {
+            "id": file.id,
+            "filename": file.filename,
+            "upload_time": file.formatted_upload_time(),
+        }
         for file in files
     ]
     return jsonify({"code": 200, "files": files_data}), 200
+
+
+@file_router.route("/download/<int:file_id>", methods=["GET"])
+@jwt_required()
+def download_file(file_id):
+    """
+    下载文件
+
+    该函数用于处理下载文件的请求。根据提供的文件ID和用户ID，从数据库中查询对应的文件信息。如果文件不存在，则返回404状态码和相应的错误消息。如果文件存在，则返回文件的下载链接。
+
+    参数:
+        file_id (int): 文件的ID。
+
+    返回:
+        flask.Response: 文件的下载响应。
+
+    """
+    user_id = get_jwt_identity()
+    file = File.query.filter_by(id=file_id, user_id=user_id).first()
+    if not file:
+        return jsonify({"code": 404, "msg": "文件未找到"}), 404
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return jsonify({"code": 404, "msg": "文件未找到"}), 404
