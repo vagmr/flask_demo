@@ -170,18 +170,18 @@ def auth():
         return jsonify({"code": "302", "msg": "不要重复登录"}), 302
     req = request.get_json(silent=True) or None
     if req is None:
-        return jsonify({"code": 400, "msg": "no data"}), 400
+        return jsonify({"code": 400, "msg": "没有数据"}), 400
     username = req.get("username")
     password = req.get("password")
     if username is None or password is None:
         return jsonify({"code": 400, "msg": "username or password not provided"}), 400
     user = User.query.filter_by(username=username).first()
     if user is None:
-        return jsonify({"code": 404, "msg": "username not found"}), 404
+        return jsonify({"code": 404, "msg": "账号不存在"}), 404
     user = User.query.filter_by(password=password).first()
     if user is None:
         return (
-            jsonify({"code": 404, "msg": " not found,please check your password"}),
+            jsonify({"code": 404, "msg": "错误,请检查用户名和密码是否正确"}),
             404,
         )
     access_token = create_access_token(identity=user.id)
