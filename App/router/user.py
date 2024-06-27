@@ -145,6 +145,7 @@ def getall_role():
 @user_router.post("/register")
 def register():
     """注册用户"""
+    return jsonify({"code": 500, "msg": "注册接口暂不开放"}), 500
     if request.get_json(silent=True) is None:
         return jsonify({"code": 400, "msg": "no data"}), 400
     req = request.get_json(silent=True)
