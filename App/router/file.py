@@ -11,6 +11,7 @@ file_router = Blueprint("file_router", __name__)
 # 配置上传文件的目录
 UPLOAD_FOLDER = "var/static/uploads"
 ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "vpsw"}
+VERSION = "1.0.1"
 
 
 def allowed_file(filename):
@@ -95,3 +96,16 @@ def download_file(file_id):
         return send_file(file_path, as_attachment=True)
     else:
         return jsonify({"code": 404, "msg": "文件未找到"}), 404
+
+
+@file_router.get("/version")
+def get_version():
+    return VERSION
+
+
+@file_router.post("/version")
+@jwt_required()
+def post_version():
+    version = request.get_json().get("version")
+    VERSION = version
+    return jsonify({"code": 200, "msg": "设置成功", "version": VERSION}), 200
