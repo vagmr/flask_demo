@@ -107,5 +107,6 @@ def get_version():
 @jwt_required()
 def post_version():
     version = request.get_json().get("version")
+    global VERSION
     VERSION = version
     return jsonify({"code": 200, "msg": "设置成功", "version": VERSION}), 200
