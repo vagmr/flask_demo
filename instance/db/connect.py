@@ -51,6 +51,21 @@ class File(db.Model):
         return self.upload_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
+class Version(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    version = db.Column(db.String(120), nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Version {self.version}>"
+
+    def to_dict(self):
+        return {"version": self.version}
+
+    def __str__(self) -> str:
+        return super().__str__()
+
+
 class Role(db.Model):
     __tablename__ = "roles"
     id = db.Column(db.Integer, primary_key=True)

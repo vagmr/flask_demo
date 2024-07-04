@@ -2,7 +2,7 @@ from datetime import datetime
 from turtle import st
 from flask import Blueprint, request, jsonify, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from instance.db.connect import db, File
+from instance.db.connect import db, File, Version
 import os
 import uuid
 
@@ -100,13 +100,19 @@ def download_file(file_id):
 
 @file_router.get("/version")
 def get_version():
-    return VERSION
+    version = Version.query.order_by(Version.updated_at.desc()).first()
+    if not version:
+        return "No version found", 404
+    return version.version, 200
 
 
 @file_router.post("/version")
 @jwt_required()
 def post_version():
     version = request.get_json().get("version")
-    global VERSION
-    VERSION = version
-    return jsonify({"code": 200, "msg": "设置成功", "version": VERSION}), 200
+    if not version:
+        return jsonify({"code": 400, "msg": "Version is required"}), 400
+    new_version = Version(version=version, updated_at=datetime.utcnow())
+    db.session.add(new_version)
+    db.session.commit()
+    return jsonify({"code": 200, "msg": "设置成功", "version": version}), 200
